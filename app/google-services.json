@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "22718694428",
+    "project_id": "bachuz-d03f0",
+    "storage_bucket": "bachuz-d03f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22718694428:android:c5cecaae5b613b67674bd9",
+        "android_client_info": {
+          "package_name": "com.example.bachuz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACaf35OZoHg0HVMBeKSjeX6ydMP7JtrrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
