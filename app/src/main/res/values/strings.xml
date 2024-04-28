@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">BachUZ</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Register</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="email_hint">E-mail</string>
+    <string name="password_hint">Password</string>
+    <string name="existing_email_error">This e-mail is already registered.</string>
+    <string name="internal_error">Internal application error.</string>
+    <string name="input_empty">This field cannot be empty.</string>
+    <string name="email_not_registered">E-mail address is not registered.</string>
+    <string name="wrong_password">Password is wrong.</string>
+    <string name="username_hint">Display name</string>
+    <string name="repassword_hint">Re-type password</string>
+    <string name="password_too_short">Password should have atleast 8 characters.</string>
+    <string name="password_not_match">Passwords do not match.</string>
 </resources>
