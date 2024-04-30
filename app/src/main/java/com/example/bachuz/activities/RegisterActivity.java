@@ -1,9 +1,6 @@
-package com.example.bachuz;
-
-import static android.content.ContentValues.TAG;
+package com.example.bachuz.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +12,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.bachuz.R;
+import com.example.bachuz.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,8 +26,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import classes.User;
 
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseFirestore db;
