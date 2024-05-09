@@ -10,6 +10,7 @@ constraintlayout = "2.1.4"
 firebaseDatabase = "20.3.1"
 googleServices = "4.4.1"
 firebaseFirestore = "24.11.1"
+playServicesAdsLite = "23.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -22,6 +23,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+play-services-ads-lite = { group = "com.google.android.gms", name = "play-services-ads-lite", version.ref = "playServicesAdsLite" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
