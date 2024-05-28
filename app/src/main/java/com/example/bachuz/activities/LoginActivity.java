@@ -37,11 +37,6 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
         setViews();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
 
     private void login() {
@@ -65,7 +60,12 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 if (Objects.equals(document.get("password"), encodedPassword)) {
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    if(document.get("username") != null) {
+                                        intent.putExtra("username", document.get("username").toString());
+                                    }
+                                    intent.putExtra("email", email);
                                     startActivity(intent);
+                                    finish();
                                 } else {
                                     passwordInputField.setError(getString(R.string.wrong_password));
                                 }

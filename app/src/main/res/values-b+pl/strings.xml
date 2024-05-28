@@ -14,4 +14,9 @@
     <string name="repassword_hint">Powtórz hasło</string>
     <string name="password_too_short">Hasło powinno mieć conajmniej 8 znaków.</string>
     <string name="password_not_match">Hasła nie są takie same.</string>
+    <string name="new_event_name">Nowe wydarzenie</string>
+    <string name="events_toolbar_title">Wydarzenia</string>
+    <string name="add_event_button_description">Dodaj nowe wydarzenie</string>
+    <string name="save_event_edit_button">Zapisz dane</string>
+    <string name="cancel_event_edit_button">Anuluj</string>
 </resources>
