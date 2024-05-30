@@ -21,6 +21,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor" />
 
+
+    <TextView
+        android:id="@+id/stepCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Steps: 0"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saveEventEditButton"
         android:layout_width="wrap_content"

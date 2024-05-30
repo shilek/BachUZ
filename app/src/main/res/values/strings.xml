@@ -12,7 +12,7 @@
     <string name="wrong_password">Password is wrong.</string>
     <string name="username_hint">Display name</string>
     <string name="repassword_hint">Re-type password</string>
-    <string name="password_too_short">Password should have atleast 8 characters.</string>
+    <string name="password_too_short">Password should have at least 8 characters.</string>
     <string name="password_not_match">Passwords do not match.</string>
     <string name="new_event_name">New event</string>
     <string name="events_toolbar_title">Events</string>
