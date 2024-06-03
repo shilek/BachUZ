@@ -19,4 +19,7 @@
     <string name="add_event_button_description">Dodaj nowe wydarzenie</string>
     <string name="save_event_edit_button">Zapisz dane</string>
     <string name="cancel_event_edit_button">Anuluj</string>
+    <string name="shopping_cart_toolbar_title">Koszyk</string>
+    <string name="add_shopping_item_button_description">Dodaj nowy przedmiot</string>
+    <string name="new_shopping_cart_item">Nowy przedmiot</string>
 </resources>
