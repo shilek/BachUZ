@@ -11,8 +11,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.app.DatePickerDialog;
+import android.widget.DatePicker;
+import android.location.Location;
+
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -34,6 +39,15 @@ import java.util.List;
 import java.util.Map;
 
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+
 public class EventActivity extends AppCompatActivity implements SensorEventListener {
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -49,6 +63,11 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     private int stepCount = 0;
     private TextView stepCountTextView;
 
+    private TextView chosenDate;
+
+    private Button dateEditButton;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +76,24 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         setViews();
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        //chosenDate = findViewById(R.id.eventDateTextView);
+        //dateEditButton = findViewById(R.id.chooseEventDateButton);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             eventNameEditText.setText(extras.getString("name"));
+            chosenDate.setText(extras.getString("date"));
             eventId = extras.getString("id");
             getEventData();
+
         }
+
+        dateEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDatePicker();
+            }
+        });
     }
 
     private void getImage(String image) {
@@ -114,6 +145,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
 
     private void saveData() {
         eventData.name = eventNameEditText.getText().toString();
+        eventData.date = chosenDate.getText().toString();
         firestore.collection("events").document(eventId).set(eventData)
                 .addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -121,6 +153,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                         Intent intent = new Intent();
                         intent.putExtra("id", eventId);
                         intent.putExtra("name", eventData.name);
+                        intent.putExtra("date", eventData.date);
                         setResult(Activity.RESULT_OK, intent);
                         finish();
                     }
@@ -132,6 +165,9 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         saveButton = findViewById(R.id.saveEventEditButton);
         cancelButton = findViewById(R.id.cancelEventEditButton);
         stepCountTextView = findViewById(R.id.stepCountTextView);
+        chosenDate = findViewById(R.id.eventDateTextView);
+        dateEditButton = findViewById(R.id.chooseEventDateButton);
+
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +182,21 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                 finish();
             }
         });
+
+    }
+
+    private void openDatePicker(){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, R.style.Theme_BachUZ , new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+
+                //Showing the picked value in the textView
+                chosenDate.setText(String.valueOf(year)+ "-"+String.valueOf(month)+ "-"+String.valueOf(day));
+
+            }
+        }, 2023, 06, 4);
+
+        datePickerDialog.show();
     }
 
     @Override

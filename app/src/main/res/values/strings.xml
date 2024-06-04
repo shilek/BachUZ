@@ -17,6 +17,10 @@
     <string name="new_event_name">New event</string>
     <string name="events_toolbar_title">Events</string>
     <string name="add_event_button_description">Add new event</string>
+    <string name="calendar_button_description">Open calendar</string>
     <string name="save_event_edit_button">Save data</string>
     <string name="cancel_event_edit_button">Cancel</string>
+    <string name="event_date_edit_button">Select date</string>
+    <string name="event_location_edit_button">Select location</string>
+    <string name="map_button_description">Open map</string>
 </resources>

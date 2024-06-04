@@ -45,5 +45,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-ads:23.0.0")
     implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
 }
