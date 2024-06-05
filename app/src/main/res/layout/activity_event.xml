@@ -7,6 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".activities.EventActivity">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/leaveEventButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_exit_to_app_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/addNewMemberButton" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addNewMemberButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_email_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/saveEventEditButton" />
+
     <ImageButton
         android:id="@+id/goToShoppingListButton"
         android:layout_width="60dp"
@@ -14,7 +36,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/baseline_shopping_cart_24"
-        app:layout_constraintEnd_toStartOf="@+id/saveEventEditButton"
+        app:layout_constraintEnd_toStartOf="@+id/removeEventButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -67,7 +89,7 @@
         tools:ignore="MissingConstraints" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/saveEventEditButton"
+        android:id="@+id/removeEventButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -77,6 +99,19 @@
         android:focusable="true"
         app:layout_constraintEnd_toStartOf="@+id/cancelEventEditButton"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_delete_forever_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/saveEventEditButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:clickable="true"
+        android:contentDescription="@string/save_event_edit_button"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/baseline_check_24" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -91,5 +126,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/baseline_cancel_24" />
+
+    <EditText
+        android:id="@+id/addNewMemberEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:hint="@string/add_new_member_button_description"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/leaveEventButton"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

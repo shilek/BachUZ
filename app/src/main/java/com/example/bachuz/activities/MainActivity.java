@@ -64,10 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView eventsList;
     private FloatingActionButton addNewEventButton;
 
-    private FloatingActionButton calendarButton;
-
-    private FloatingActionButton mapButton;
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,28 +134,10 @@ public class MainActivity extends AppCompatActivity {
         toolbarUserName = findViewById(R.id.toolbarUserName);
         addNewEventButton = findViewById(R.id.addNewEventButton);
         eventsList = findViewById(R.id.eventsListView);
-        calendarButton = findViewById(R.id.CalendarButton);
-        mapButton = findViewById(R.id.MapButton);
         addNewEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addEvent();
-            }
-        });
-
-        calendarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, CalendarActivity.class);
-                someActivityResultLauncher.launch(i);
-            }
-        });
-
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, MapActivity.class);
-                someActivityResultLauncher.launch(i);
             }
         });
     }
@@ -214,7 +192,76 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                    } else if (result.getResultCode() == 2) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Bundle extras = data.getExtras();
+                            String id = extras.getString("id");
+                            removeEvent(id);
+                        }
+                    } else if (result.getResultCode() == 3) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Bundle extras = data.getExtras();
+                            String id = extras.getString("id");
+                            leaveEvent(id);
+                        }
                     }
                 }
             });
+
+    private void removeEvent(String eventId){
+        for(int i=0; i < events.size(); i++) {
+            if(events.get(i).Key.equals(eventId)) {
+                events.remove(i);
+                db.collection("events").document(eventId).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                setListView();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            }
+                        });
+                break;
+            }
+        }
+    }
+
+    private void leaveEvent(String eventId){
+        for(int i=0; i < events.size(); i++) {
+            if(events.get(i).Key.equals(eventId)) {
+                events.remove(i);
+                db.collection("events").document(eventId).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Map<String, Object> document = documentSnapshot.getData();
+                                if(document != null) {
+                                    if(document.get("members") != null){
+                                        ArrayList<String> eventMembers = (ArrayList<String>)document.get("members");
+                                        for(int i=0; i < eventMembers.size(); i++){
+                                            if(eventMembers.get(i).equals(email)){
+                                                eventMembers.remove(i);
+                                                db.collection("events").document(eventId).update("members", eventMembers);
+                                                setListView();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            }
+                        });
+                break;
+            }
+        }
+    }
 }

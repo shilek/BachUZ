@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
 import android.widget.DatePicker;
-import android.location.Location;
+import android.widget.Toast;
 
 
 import androidx.activity.EdgeToEdge;
@@ -39,23 +39,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class EventActivity extends AppCompatActivity implements SensorEventListener {
@@ -73,10 +65,12 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     private boolean isCountingSteps = false;
     private int stepCount = 0;
     private TextView stepCountTextView;
-
     private TextView chosenDate;
-
     private Button dateEditButton;
+    private FloatingActionButton removeEventButton;
+    private EditText addNewMemberEditText;
+    private FloatingActionButton addNewMemberButton;
+    private FloatingActionButton leaveEventButton;
 
 
     @Override
@@ -87,8 +81,6 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         setViews();
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        //chosenDate = findViewById(R.id.eventDateTextView);
-        //dateEditButton = findViewById(R.id.chooseEventDateButton);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -137,6 +129,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                                 eventData = new Event(document.get("name").toString());
                                 if(document.get("date") != null) {
                                     eventData.date = (String)document.get("date");
+                                    chosenDate.setText(eventData.date);
                                 }
                                 if(document.get("localization") != null) {
                                     eventData.localization = (String)document.get("localization");
@@ -156,7 +149,6 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
 
     private void saveData() {
         eventData.name = eventNameEditText.getText().toString();
-        eventData.date = chosenDate.getText().toString();
         firestore.collection("events").document(eventId).set(eventData)
                 .addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -179,6 +171,10 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         chosenDate = findViewById(R.id.eventDateTextView);
         dateEditButton = findViewById(R.id.chooseEventDateButton);
         goToShoppingListButton = findViewById(R.id.goToShoppingListButton);
+        removeEventButton = findViewById(R.id.removeEventButton);
+        addNewMemberEditText = findViewById(R.id.addNewMemberEditText);
+        addNewMemberButton = findViewById(R.id.addNewMemberButton);
+        leaveEventButton = findViewById(R.id.leaveEventButton);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,19 +189,79 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                 finish();
             }
         });
+
+        removeEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("id", eventId);
+                setResult(2, intent);
+                finish();
+            }
+        });
+
+        addNewMemberButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String memberMail = addNewMemberEditText.getText().toString();
+                if(!eventData.members.contains(memberMail)) {
+                    firestore.collection("users").whereEqualTo("email", memberMail).get()
+                            .addOnSuccessListener(new OnSuccessListener() {
+                                @Override
+                                public void onSuccess(Object o) {
+                                    eventData.members.add(memberMail);
+                                    Toast toast = Toast.makeText(EventActivity.this, getString(R.string.member_added_toast), Toast.LENGTH_LONG);
+                                    toast.show();
+                                    addNewMemberEditText.setText("");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e("MAIN_ACTIVITY", e.getMessage());
+                                }
+                            });
+                } else {
+                    Toast toast = Toast.makeText(EventActivity.this, getString(R.string.member_existing_toast), Toast.LENGTH_LONG);
+                    toast.show();
+                    addNewMemberEditText.setText("");
+                }
+            }
+        });
+
+        leaveEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("id", eventId);
+                setResult(3, intent);
+                finish();
+            }
+        });
+
        setShoppingCartButton();
     }
 
     private void openDatePicker(){
+        int day = 06;
+        int month = 06;
+        int year = 2023;
+        if(eventData.date != null) {
+            List<String> separatedDate = Arrays.asList(eventData.date.split("-"));
+            if(separatedDate.size() > 1) {
+                day = Integer.parseInt(separatedDate.get(0));
+                month = Integer.parseInt(separatedDate.get(1));
+                year = Integer.parseInt(separatedDate.get(2));
+            }
+        }
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, R.style.Theme_BachUZ , new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-
-                //Showing the picked value in the textView
-                chosenDate.setText(String.valueOf(year)+ "-"+String.valueOf(month)+ "-"+String.valueOf(day));
-
+                String dateText = String.valueOf(day)+ "-"+String.valueOf(month)+ "-"+String.valueOf(year);
+                eventData.date = dateText;
+                chosenDate.setText(dateText);
             }
-        }, 2023, 06, 4);
+        }, year, month, day);
 
         datePickerDialog.show();
     }
