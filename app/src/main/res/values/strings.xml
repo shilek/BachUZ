@@ -26,4 +26,8 @@
     <string name="shopping_cart_toolbar_title">Shopping cart</string>
     <string name="add_shopping_item_button_description">Add new item</string>
     <string name="new_shopping_cart_item">New item</string>
+    <string name="add_new_member_button_description">Add new member</string>
+    <string name="leave_event_button_description">Leave event</string>
+    <string name="member_added_toast">User added!</string>
+    <string name="member_existing_toast">User already invited</string>
 </resources>
