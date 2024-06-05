@@ -17,8 +17,12 @@
     <string name="new_event_name">Nowe wydarzenie</string>
     <string name="events_toolbar_title">Wydarzenia</string>
     <string name="add_event_button_description">Dodaj nowe wydarzenie</string>
+    <string name="calendar_button_description">Otwórz kalendarz</string>
     <string name="save_event_edit_button">Zapisz dane</string>
     <string name="cancel_event_edit_button">Anuluj</string>
+    <string name="event_date_edit_button">Wybierz datę</string>
+    <string name="event_location_edit_button">Wybierz miejsce</string>
+    <string name="map_button_description">Otwórz mapę</string>
     <string name="shopping_cart_toolbar_title">Koszyk</string>
     <string name="add_shopping_item_button_description">Dodaj nowy przedmiot</string>
     <string name="new_shopping_cart_item">Nowy przedmiot</string>

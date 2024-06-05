@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
     private ListView eventsList;
     private FloatingActionButton addNewEventButton;
 
+    private FloatingActionButton calendarButton;
+
+    private FloatingActionButton mapButton;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         mAdView.loadAd(adRequest);
 
         getUserEvents();
+
     }
 
     private void getUserEvents() {
@@ -133,10 +138,28 @@ public class MainActivity extends AppCompatActivity {
         toolbarUserName = findViewById(R.id.toolbarUserName);
         addNewEventButton = findViewById(R.id.addNewEventButton);
         eventsList = findViewById(R.id.eventsListView);
+        calendarButton = findViewById(R.id.CalendarButton);
+        mapButton = findViewById(R.id.MapButton);
         addNewEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addEvent();
+            }
+        });
+
+        calendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, CalendarActivity.class);
+                someActivityResultLauncher.launch(i);
+            }
+        });
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, MapActivity.class);
+                someActivityResultLauncher.launch(i);
             }
         });
     }
