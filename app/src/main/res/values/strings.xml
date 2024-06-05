@@ -19,4 +19,9 @@
     <string name="add_event_button_description">Add new event</string>
     <string name="save_event_edit_button">Save data</string>
     <string name="cancel_event_edit_button">Cancel</string>
+    <string name="shopping_cart_toolbar_title">Shopping cart</string>
+    <string name="add_shopping_item_button_description">Add new item</string>
+    <string name="new_shopping_cart_item">New item</string>
+    <!-- Strings used for fragments for navigation -->
+
 </resources>
