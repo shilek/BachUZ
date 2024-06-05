@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private AdView adView;
     private String email;
     private ArrayList<KeyValue> events = new ArrayList<KeyValue>();
+
     private TextView toolbarUserName;
     private ListView eventsList;
     private FloatingActionButton addNewEventButton;

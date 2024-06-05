@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
 import android.widget.DatePicker;
@@ -20,11 +21,17 @@ import android.location.Location;
 
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bachuz.R;
 import com.example.bachuz.models.Event;
+import com.example.bachuz.models.KeyValue;
+import com.example.bachuz.models.Product;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,6 +42,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +65,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     private EditText eventNameEditText;
     private FloatingActionButton saveButton;
     private FloatingActionButton cancelButton;
+    private ImageButton goToShoppingListButton;
     private Event eventData;
     private String eventId;
     private SensorManager sensorManager;
@@ -130,11 +141,11 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                                 if(document.get("localization") != null) {
                                     eventData.localization = (String)document.get("localization");
                                 }
-                                if(document.get("images") != null){
-                                    eventData.images = (List<String>)document.get("images");
+                                if(document.get("products") != null){
+                                    eventData.products = mapToProductsArray(((ArrayList<HashMap<Object, Object>>)document.get("products")));
                                 }
                                 if(document.get("members") != null){
-                                    eventData.members = (List<String>)document.get("members");
+                                    eventData.members = (ArrayList<String>)document.get("members");
                                 }
                                 startStepCounting();
                             }
@@ -167,7 +178,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         stepCountTextView = findViewById(R.id.stepCountTextView);
         chosenDate = findViewById(R.id.eventDateTextView);
         dateEditButton = findViewById(R.id.chooseEventDateButton);
-
+        goToShoppingListButton = findViewById(R.id.goToShoppingListButton);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,7 +193,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                 finish();
             }
         });
-
+       setShoppingCartButton();
     }
 
     private void openDatePicker(){
@@ -243,5 +254,57 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     private void startStepCounting() {
         isCountingSteps = true;
         sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        if(intent != null){
+                            Bundle extras = intent.getExtras();
+                            if(extras != null) {
+                                ArrayList<String> names = extras.getStringArrayList("productNames");
+                                ArrayList<Integer> counts = extras.getIntegerArrayList("productCounts");
+                                ArrayList<Product> productList = new ArrayList<Product>();
+                                if(names != null){
+                                    for(int i=0; i < names.size(); i++) {
+                                        productList.add(new Product(names.get(i), counts.get(i)));
+                                    }
+                                }
+                                eventData.products = productList;
+                                setShoppingCartButton();
+                            }
+                        }
+                    }
+                }
+            });
+
+    private void setShoppingCartButton(){
+        goToShoppingListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ShoppingCartActivity.class);
+                ArrayList<String> names = new ArrayList<>();
+                ArrayList<Integer> counts = new ArrayList<>();
+                for(int i=0; i < eventData.products.size(); i++){
+                    names.add(eventData.products.get(i).productName);
+                    counts.add(eventData.products.get(i).productCount);
+                }
+                intent.putStringArrayListExtra("productNames", names);
+                intent.putIntegerArrayListExtra("productCounts", counts);
+                someActivityResultLauncher.launch(intent);
+            }
+        });
+    }
+
+    private ArrayList<Product> mapToProductsArray(ArrayList<HashMap<Object, Object>> array){
+        ArrayList<Product> products = new ArrayList<Product>();
+        for(int i=0; i < array.size(); i++) {
+            products.add(new Product((String)array.get(i).get("productName"), Math.toIntExact((Long)array.get(i).get("productCount"))));
+        }
+        return products;
     }
 }

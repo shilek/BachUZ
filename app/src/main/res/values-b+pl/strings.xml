@@ -23,4 +23,7 @@
     <string name="event_date_edit_button">Wybierz datę</string>
     <string name="event_location_edit_button">Wybierz miejsce</string>
     <string name="map_button_description">Otwórz mapę</string>
+    <string name="shopping_cart_toolbar_title">Koszyk</string>
+    <string name="add_shopping_item_button_description">Dodaj nowy przedmiot</string>
+    <string name="new_shopping_cart_item">Nowy przedmiot</string>
 </resources>

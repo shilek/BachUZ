@@ -54,6 +54,9 @@
         <activity
             android:name=".activities.MapActivity"
             android:exported="false"></activity>
+          <activity
+            android:name=".activities.ShoppingCartActivity"
+            android:exported="false"></activity>
     </application>
 
 </manifest>
