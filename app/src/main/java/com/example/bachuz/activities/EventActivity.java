@@ -1,24 +1,25 @@
 package com.example.bachuz.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.app.DatePickerDialog;
-import android.widget.DatePicker;
 import android.widget.Toast;
-
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -30,7 +31,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bachuz.R;
 import com.example.bachuz.models.Event;
-import com.example.bachuz.models.KeyValue;
 import com.example.bachuz.models.Product;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,15 +39,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
 
 
 public class EventActivity extends AppCompatActivity implements SensorEventListener {
@@ -71,6 +73,13 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     private EditText addNewMemberEditText;
     private FloatingActionButton addNewMemberButton;
     private FloatingActionButton leaveEventButton;
+    private String chosenDateString;
+    private long chosenDateMillis;
+    private long initialStepCount = 0;
+    private boolean isStepCountingActive = false;
+    private EditText smsEditText;
+    private Button openSmsButton;
+    private Button sendSmsButton;
 
 
     @Override
@@ -175,7 +184,29 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         addNewMemberEditText = findViewById(R.id.addNewMemberEditText);
         addNewMemberButton = findViewById(R.id.addNewMemberButton);
         leaveEventButton = findViewById(R.id.leaveEventButton);
+        smsEditText = findViewById(R.id.smsEditText);
+        openSmsButton = findViewById(R.id.openSmsButton);
+        sendSmsButton = findViewById(R.id.sendSmsButton);
 
+        openSmsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                smsEditText.setVisibility(View.VISIBLE);
+                sendSmsButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        sendSmsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String smsText = smsEditText.getText().toString();
+                if (!smsText.isEmpty()) {
+                    sendSms(smsText);
+                } else {
+                    Toast.makeText(EventActivity.this, "Wprowadź tekst SMS", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -242,28 +273,38 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
        setShoppingCartButton();
     }
 
-    private void openDatePicker(){
-        int day = 06;
-        int month = 06;
-        int year = 2023;
-        if(eventData.date != null) {
+    private void openDatePicker() {
+        int day = 6;
+        int month = 11; // December (0-indexed)
+        int year = 2024;
+        if (eventData.date != null) {
             List<String> separatedDate = Arrays.asList(eventData.date.split("-"));
-            if(separatedDate.size() > 1) {
+            if (separatedDate.size() > 1) {
                 day = Integer.parseInt(separatedDate.get(0));
-                month = Integer.parseInt(separatedDate.get(1));
+                month = Integer.parseInt(separatedDate.get(1)) - 1; // Month is 0-indexed
                 year = Integer.parseInt(separatedDate.get(2));
             }
         }
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, R.style.Theme_BachUZ , new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, R.style.Theme_BachUZ, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                String dateText = String.valueOf(day)+ "-"+String.valueOf(month)+ "-"+String.valueOf(year);
+                String dateText = String.valueOf(day) + "-" + String.valueOf(month + 1) + "-" + String.valueOf(year);
                 eventData.date = dateText;
                 chosenDate.setText(dateText);
+                chosenDateString = dateText;
+                chosenDateMillis = convertDateToMillis(day, month + 1, year); // Store chosen date in milliseconds
+                isStepCountingActive = false;  // Reset step counting flag
+                startStepCounting();  // Start step counting process
             }
         }, year, month, day);
 
         datePickerDialog.show();
+    }
+
+    private long convertDateToMillis(int day, int month, int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day, 0, 0, 0); // Months are 0-indexed in Calendar
+        return calendar.getTimeInMillis();
     }
 
     @Override
@@ -275,9 +316,6 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         }
         return super.onKeyDown(keyCode, event);
     }
-//to be completed later -
-// as the step counter for events should start once the party starts -
-// and the feature for calendar is not implemented for now.
     @Override
     protected void onResume() {
         super.onResume();
@@ -297,10 +335,20 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            stepCount = (int) event.values[0];
-            stepCountTextView.setText("Steps: " + stepCount);
+            if (!isStepCountingActive) {
+                long currentMillis = System.currentTimeMillis();
+                if (currentMillis >= chosenDateMillis) {
+                    initialStepCount = (int) event.values[0];
+                    isStepCountingActive = true;
+                }
+            }
+            if (isStepCountingActive) {
+                stepCount = (int) event.values[0] - (int) initialStepCount;
+                stepCountTextView.setText("Steps: " + stepCount);
+            }
         }
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -311,6 +359,7 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         isCountingSteps = true;
         sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_UI);
     }
+
 
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -337,6 +386,22 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
                     }
                 }
             });
+
+    @SuppressLint("IntentReset")
+    private void sendSms(String message) {
+        Intent smsIntent = new Intent(Intent.ACTION_SEND);
+        smsIntent.setData(Uri.parse("smsto:"));
+        smsIntent.putExtra("sms_body", message);
+        smsIntent.addCategory(Intent.CATEGORY_APP_MESSAGING);
+        smsIntent.setType("vnd.android-dir/mms-sms");
+        if (smsIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(smsIntent);
+        } else {
+            Toast.makeText(this, "Nie można znaleźć aplikacji do wysyłania SMS", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
     private void setShoppingCartButton(){
         goToShoppingListButton.setOnClickListener(new View.OnClickListener() {
