@@ -30,4 +30,8 @@
     <string name="leave_event_button_description">Opuść wydarzenie</string>
     <string name="member_added_toast">Użytkownik dodany!</string>
     <string name="member_existing_toast">Użytkownik już jest zaproszony</string>
+    <string name="steps_counter">Kroki: </string>
+    <string name="open_sms">Wiadomość SMS</string>
+    <string name="insert_sms_text">Twoja wiadomość SMS do ziomeczków</string>
+    <string name="send_sms">Wyślij SMS</string>
 </resources>
