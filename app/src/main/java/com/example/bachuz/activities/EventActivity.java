@@ -80,6 +80,8 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
     private EditText smsEditText;
     private Button openSmsButton;
     private Button sendSmsButton;
+    private FloatingActionButton calendarButton;
+    private FloatingActionButton mapButton;
 
 
     @Override
@@ -187,12 +189,30 @@ public class EventActivity extends AppCompatActivity implements SensorEventListe
         smsEditText = findViewById(R.id.smsEditText);
         openSmsButton = findViewById(R.id.openSmsButton);
         sendSmsButton = findViewById(R.id.sendSmsButton);
+        calendarButton = findViewById(R.id.CalendarButton);
+        mapButton = findViewById(R.id.MapButton);
 
         openSmsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 smsEditText.setVisibility(View.VISIBLE);
                 sendSmsButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        calendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(EventActivity.this, CalendarActivity.class);
+                someActivityResultLauncher.launch(i);
+            }
+        });
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(EventActivity.this, MapActivity.class);
+                someActivityResultLauncher.launch(i);
             }
         });
 
